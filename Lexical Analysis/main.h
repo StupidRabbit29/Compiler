@@ -16,5 +16,5 @@ char get_char(ifstream& inprog);
 void get_npc(ifstream& inprog, char& C);
 bool letter(char& C);
 bool digit(char& C);
-
+int reserve(char* token);
 
