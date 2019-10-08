@@ -8,6 +8,7 @@ using namespace std;
 #define half_buf_size 1024
 #define buf_left 0
 #define buf_right 1
+
 #define keynum 32
 #define optnum 15
 #define endnum 13
@@ -29,6 +30,7 @@ typedef struct token
 }Token;
 
 enum Status{OK, ERR, TER};
+enum ErrorType{Wrong_dot, Wrong_neg, Wrong_E, Single_or, Invalid_character};
 
 
 void getinput(ifstream& inprog, int pos);
@@ -42,5 +44,6 @@ void cat(char& C, int& cur);
 void retract(void);
 long long get_int(void);
 void add(int type, int num);
+void errror(ErrorType type);
 
 

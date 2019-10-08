@@ -28,9 +28,6 @@ int main(int argc, char* argv[])
 	//获取被编译文件文件名
 	if (Getarg(argc, argv))
 	{
-		//test
-		//cout << filename << '*' <<endl;
-
 		//打开文件
 		ifstream inprog(filename, ifstream::in | ifstream::binary);
 	

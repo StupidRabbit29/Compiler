@@ -589,3 +589,15 @@ void add(int type, int num)
 	}
 }
 
+void errror(ErrorType type)
+{
+	switch (type)
+	{
+	case Wrong_dot:
+	case Wrong_neg:
+	case Wrong_E:
+	case Single_or:
+	case Invalid_character:
+	default:
+	}
+}
