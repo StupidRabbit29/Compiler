@@ -9,17 +9,17 @@ using namespace std;
 #define buf_left 0
 #define buf_right 1
 #define keynum 32
-#define optnum 16
-#define endnum 12
+#define optnum 15
+#define endnum 13
 #define othernum 10
 
-#define WORD 1
-#define KEYWORD 2
-#define INTDIG 3
-#define FLOATDIG 4
-#define OPTION 5
-#define END 6
-#define OTHER 7
+#define WORD 1				//普通标识符
+#define KEYWORD 2			//关键字
+#define INTDIG 3			//整数
+#define FLOATDIG 4			//浮点数
+#define OPTION 5			//操作符号
+#define END 6				//界符
+#define OTHER 7				//其他符号
 
 typedef struct token
 {

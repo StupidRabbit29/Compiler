@@ -24,12 +24,12 @@ const char* key[keynum] =
 const char* opt[optnum] =
 {
 	"+", "+=", "-", "-=", "*", "*=", "/", "/=", "%", "%=", "^", "^=", 
-	"#", "&", "\\", "?"
+	"#", "&", "?"
 };
 
-const char* end[endnum] =
+const char end[endnum] =
 {
-	"(", ")", "{", "}", "[", "]", ":", ";", ",", ".", "\"", "\'"
+	'(', ')', '{', '}', '[', ']', ':', ';', ',', '.', '\"', '\'', '\\'
 };
 
 const char* other[othernum] =
@@ -77,8 +77,7 @@ Status analysis(ifstream& inprog)
 				switch (C)
 				{
 				case '#':state = 0; add(OPTION, 12); break;
-				case '\\':state = 0; add(OPTION, 14); break;
-				case '?':state = 0; add(OPTION, 15); break;
+				case '?':state = 0; add(OPTION, 14); break;
 				case '(':state = 0; add(END, 0); break;
 				case ')':state = 0; add(END, 1); break;
 				case '{':state = 0; add(END, 2); break;
@@ -91,6 +90,20 @@ Status analysis(ifstream& inprog)
 				case '.':state = 0; add(END, 9); break;
 				case '\"':state = 0; add(END, 10); break;
 				case '\'':state = 0; add(END, 11); break;
+				case '\\':state = 0; add(END, 12); break;
+				case '+':state = 8; break;
+				case '-':state = 9; break;
+				case '*':state = 10; break;
+				case '/':state = 11; break;
+				case '%':state = 12; break;
+				case '^':state = 13; break;
+				case '&':state = 14; break;
+				case '<':state = 15; break;
+				case '>':state = 16; break;
+				case '!':state = 17; break;
+				case '=':state = 18; break;
+				case '|':state = 19; break;
+				default:state = 20; break;
 				}
 			break;
 		case 1://标识符状态
@@ -203,13 +216,216 @@ Status analysis(ifstream& inprog)
 				add(FLOATDIG, 0);
 			}
 			break;
-		case 8://
-		case 9://
-		case 10://
-		case 11://
-		case 12://
-		case 13://
-		default:
+		case 8://	+状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：+=
+				add(OPTION, 1);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：+
+				add(OPTION, 0);
+			}
+			break;
+		case 9://	-状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：-=
+				add(OPTION, 3);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：-
+				add(OPTION, 2);
+			}
+			break;
+		case 10://	*状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：*=
+				add(OPTION, 5);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：*
+				add(OPTION, 4);
+			}
+			break;
+		case 11://	/状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：/=
+				add(OPTION, 7);
+			}
+			else if (C == '/')
+				//注释状态
+			{
+				while (C != '\n')
+					C = get_char(inprog);
+			}
+			else if (C == '*')
+				//注释状态
+			{
+				C = get_char(inprog);
+				while (true)
+				{
+					while (C != '*')
+						C = get_char(inprog);
+					C = get_char(inprog);
+					if (C == '/')
+						break;
+				}
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：/
+				add(OPTION, 6);
+			}
+			break;
+		case 12://	%状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：%=
+				add(OPTION, 9);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：%
+				add(OPTION, 8);
+			}
+			break;
+		case 13://	^状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：^=
+				add(OPTION, 11);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：^
+				add(OPTION, 10);
+			}
+			break;
+		case 14://	&状态
+			C = get_char(inprog);
+			if (C == '&')
+			{
+				state = 0;
+				//识别结果：&&
+				add(OTHER, 1);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：&
+				add(OPTION, 13);
+			}
+			break;
+		case 15://	<状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：<=
+				add(OTHER, 4);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：<
+				add(OTHER, 3);
+			}
+			break;
+		case 16://	>状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：>=
+				add(OTHER, 6);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：>
+				add(OTHER, 5);
+			}
+			break;
+		case 17://	!状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：!=
+				add(OTHER, 9);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：!
+				add(OTHER, 0);
+			}
+			break;
+		case 18://	=状态
+			C = get_char(inprog);
+			if (C == '=')
+			{
+				state = 0;
+				//识别结果：==
+				add(OTHER, 8);
+			}
+			else
+			{
+				retract();
+				state = 0;
+				//识别结果：=
+				add(OTHER, 7);
+			}
+			break;
+		case 19://	|状态
+			C = get_char(inprog);
+			if (C == '|')
+			{
+				state = 0;
+				//识别结果：||
+				add(OTHER, 2);
+			}
+			else
+			{
+				retract();
+				//错误处理：仅识别到一个|
+
+			}
+		case 20://	错误处理：识别到非法字符
 		}
 
 		if (ter)
@@ -320,11 +536,14 @@ void add(int type, int num)
 {
 	string word;
 	long long intiger;
+	double floatnum;
 	int index;
 	Token temp;
+
 	switch (type)
 	{
-	case 1:
+	case WORD:
+		//普通标识符
 		word = token;
 		index = Word.size();
 		Word.push_back(word);
@@ -332,12 +551,14 @@ void add(int type, int num)
 		temp.index = index;
 		temp.line = line;
 		TOKEN.push_back(temp);
-	case 2:
+	case KEYWORD:
+		//关键字
 		temp.type = KEYWORD;
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
-	case 3:
+	case INTDIG:
+		//整数
 		intiger = get_int();
 		index = INT.size();
 		INT.push_back(intiger);
@@ -345,11 +566,26 @@ void add(int type, int num)
 		temp.index = index;
 		temp.line = line;
 		TOKEN.push_back(temp);
-	case 4:
-	case 5:
-	case 6:
-	case 7:
-	default:
+	case FLOATDIG:
+		//浮点数
+	case OPTION:
+		//操作符号
+		temp.type = OPTION;
+		temp.index = num;
+		temp.line = line;
+		TOKEN.push_back(temp);
+	case END:
+		//界符
+		temp.type = END;
+		temp.index = num;
+		temp.line = line;
+		TOKEN.push_back(temp);
+	case OTHER:
+		//其他符号
+		temp.type = OTHER;
+		temp.index = num;
+		temp.line = line;
+		TOKEN.push_back(temp);
 	}
 }
 
