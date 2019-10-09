@@ -156,7 +156,7 @@ Status analysis(ifstream& inprog)
 			else
 			{
 				//在小数点状态出现了错误字符，错误处理
-
+				error(Wrong_dot);
 				state = 0;
 			}
 			break;
@@ -186,7 +186,7 @@ Status analysis(ifstream& inprog)
 			{
 				retract();
 				//在指数状态出现错误字符，错误处理
-
+				error(Wrong_E);
 				state = 0;
 			}
 			break;
@@ -199,7 +199,7 @@ Status analysis(ifstream& inprog)
 			{
 				retract();
 				//指数部分符号后没有数字，错误处理
-
+				error(Wrong_neg);
 				state = 0;
 			}
 			break;
@@ -423,9 +423,14 @@ Status analysis(ifstream& inprog)
 			{
 				retract();
 				//错误处理：仅识别到一个|
-
+				error(Single_or);
 			}
 		case 20://	错误处理：识别到非法字符
+			error(Invalid_character);
+			break;
+		default:
+			error(Other_wrong);
+			break;
 		}
 
 		if (ter)
@@ -586,18 +591,51 @@ void add(int type, int num)
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
+	default:
+		error(Other_wrong);
+		break;
 	}
 }
 
-void errror(ErrorType type)
+void error(ErrorType type)
 {
 	switch (type)
 	{
 	case Wrong_dot:
+		cout << "****************************************************************************" << endl
+			<< "错误：浮点数的小数点后应当有数字" << endl
+			<< "行号：" << line << endl
+			<< "****************************************************************************" << endl;
+		break;
 	case Wrong_neg:
+		cout << "****************************************************************************" << endl
+			<< "错误：浮点数指数部分的+或-号后应当有数字" << endl
+			<< "行号：" << line << endl
+			<< "****************************************************************************" << endl;
+		break;
 	case Wrong_E:
+		cout << "****************************************************************************" << endl
+			<< "错误：浮点数指数部分E或e后只能出现（+/-）数字" << endl
+			<< "行号：" << line << endl
+			<< "****************************************************************************" << endl;
+		break;
 	case Single_or:
+		cout << "****************************************************************************" << endl
+			<< "错误：用户输入的||仅有一个|" << endl
+			<< "行号：" << line << endl
+			<< "****************************************************************************" << endl;
+		break;
 	case Invalid_character:
+		cout << "****************************************************************************" << endl
+			<< "错误：出现C语言不支持的字符" << endl
+			<< "行号：" << line << endl
+			<< "****************************************************************************" << endl;
+		break;
 	default:
+		cout << "****************************************************************************" << endl
+			<< "错误：编译器运行时错误" << endl
+			<< "行号：" << line << endl
+			<< "****************************************************************************" << endl;
+		break;
 	}
 }
