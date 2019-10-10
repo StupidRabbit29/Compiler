@@ -6,14 +6,14 @@
 #include<cmath>
 using namespace std;
 
-#define half_buf_size 1024
-#define buf_left 0
-#define buf_right 1
+#define half_buf_size 1024	//单缓存区长度
+#define buf_left 0			//左侧缓存区
+#define buf_right 1			//右侧缓存区
 
-#define keynum 32
-#define optnum 16
-#define endnum 13
-#define othernum 12
+#define keynum 32			//关键字数量
+#define optnum 16			//操作符数量
+#define endnum 13			//界符数量
+#define othernum 12			//其他符号数量
 
 #define WORD 1				//普通标识符
 #define KEYWORD 2			//关键字
@@ -23,6 +23,7 @@ using namespace std;
 #define END 6				//界符
 #define OTHER 7				//其他符号
 
+//Token 设置
 typedef struct token
 {
 	int type;			//记号

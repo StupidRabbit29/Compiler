@@ -4,10 +4,10 @@ using namespace std;
 char defaultfile[] = "D://VS_Projects//Compiler//Debug//test.c";
 char* filename = defaultfile;
 
-char buf[half_buf_size * 2];
-char* lexemebegin;
-char* forwardp;
-char token[half_buf_size];
+char buf[half_buf_size * 2];		//双缓存区
+char* lexemebegin;					//开始指针
+char* forwardp;						//前向指针
+char token[half_buf_size];			//工作缓存区
 
 
 

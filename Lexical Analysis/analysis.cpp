@@ -1,10 +1,10 @@
 #include"main.h"
 using namespace std;
 
-vector<long long>INT;
-vector<double>FLOAT;
-vector<string>Word;
-vector<Token>TOKEN;
+vector<long long>INT;		//整数表
+vector<double>FLOAT;		//浮点数表
+vector<string>Word;			//标识符表
+vector<Token>TOKEN;			//记号序列
 
 int line = 1;
 
@@ -13,6 +13,9 @@ extern char* lexemebegin;
 extern char* forwardp;
 extern char token[half_buf_size];
 
+extern int totalnum;
+
+//关键字
 const char* key[keynum] = 
 { 
 	"auto", "break", "case", "char", "const", "continue", "default", "do", 
@@ -20,18 +23,18 @@ const char* key[keynum] =
 	"int", "long", "register", "return", "short", "signed", "sizeof", "static",
 	"struct", "switch", "typedef", "union", "unsigned", "void", "volatile", "while"
 };
-
+//操作符
 const char* opt[optnum] =
 {
 	"+", "+=", "-", "-=", "*", "*=", "/", "/=", "%", "%=", "^", "^=", 
 	"#", "&", "?", "|"
 };
-
+//界符
 const char End[endnum] =
 {
 	'(', ')', '{', '}', '[', ']', ':', ';', ',', '.', '\"', '\'', '\\'
 };
-
+//其他符号
 const char* other[othernum] =
 {
 	"!", "&&", "||", "<", "<=", ">", ">=", "=", "==", "!=", "_", "~"
@@ -448,9 +451,10 @@ Status analysis(ifstream& inprog)
 				<< "\tLexical Analysis is successfully completed!" << endl
 				<< "\tIn your program, we get:" << endl
 				<< "\tLines:" << line - 1 << endl
-				<< "\tIndentifiers:\t" << Word.size() << endl
-				<< "\tIntegers:\t" << INT.size() << endl
-				<< "\tFloats:\t" << FLOAT.size() << endl
+				<< "\t字符总数:\t" << totalnum << endl
+				<< "\t标识符:\t" << Word.size() << endl
+				<< "\t整数:\t" << INT.size() << endl
+				<< "\t浮点数:\t" << FLOAT.size() << endl
 				<< "****************************************************************************" << endl;
 			break;
 		}
@@ -705,7 +709,7 @@ void error(ErrorType type)
 		break;
 	case Wrong_E:
 		cout << "****************************************************************************" << endl
-			<< "错误：浮点数指数部分E或e后只能出现（+/-）数字" << endl
+			<< "错误：浮点数指数部分E或e后应当有数字只能出现（+/-）数字" << endl
 			<< "行号：" << line << endl
 			<< "****************************************************************************" << endl;
 		break;
