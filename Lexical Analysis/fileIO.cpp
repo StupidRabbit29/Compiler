@@ -9,7 +9,12 @@ void getinput(ifstream &inprog, int pos)
 {
 	/*inprog.seekg(0, fstream::end);
 	cout << inprog.tellg() << EOF << endl;*/
+	char temp[half_buf_size + 1] = { '\0' };
 
-	inprog.read(buf + pos * half_buf_size, half_buf_size - 1);
+	inprog.read(/*buf + pos * half_buf_size*/temp, half_buf_size - 1);
+	int num = strlen(temp);
+	temp[num] = -1;
+	//cout << inprog.tellg();//	EOF = -1
+	strcpy_s(buf + pos * half_buf_size, sizeof(temp), temp);
 	buf[half_buf_size - 1 + pos * half_buf_size] = -1;
 }

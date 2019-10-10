@@ -11,9 +11,9 @@ using namespace std;
 #define buf_right 1
 
 #define keynum 32
-#define optnum 15
+#define optnum 16
 #define endnum 13
-#define othernum 11
+#define othernum 12
 
 #define WORD 1				//普通标识符
 #define KEYWORD 2			//关键字
@@ -31,7 +31,7 @@ typedef struct token
 }Token;
 
 enum Status{OK, ERR, TER};
-enum ErrorType{Wrong_dot, Wrong_neg, Wrong_E, Single_or, Invalid_character, Other_wrong};
+enum ErrorType{Wrong_dot, Wrong_neg, Wrong_E, Invalid_character, Other_wrong};
 
 
 void getinput(ifstream& inprog, int pos);

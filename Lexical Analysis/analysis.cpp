@@ -24,7 +24,7 @@ const char* key[keynum] =
 const char* opt[optnum] =
 {
 	"+", "+=", "-", "-=", "*", "*=", "/", "/=", "%", "%=", "^", "^=", 
-	"#", "&", "?"
+	"#", "&", "?", "|"
 };
 
 const char End[endnum] =
@@ -34,7 +34,7 @@ const char End[endnum] =
 
 const char* other[othernum] =
 {
-	"!", "&&", "||", "<", "<=", ">", ">=", "=", "==", "!=", "_"
+	"!", "&&", "||", "<", "<=", ">", ">=", "=", "==", "!=", "_", "~"
 };
 
 Status analysis(ifstream& inprog)
@@ -88,6 +88,7 @@ Status analysis(ifstream& inprog)
 				case '\'':state = 0; add(END, 11); break;
 				case '\\':state = 0; add(END, 12); break;
 				case '_':state = 0; add(OTHER, 10); break;
+				case '~':state = 0; add(OTHER, 11); break;
 				case '+':state = 8; break;
 				case '-':state = 9; break;
 				case '*':state = 10; break;
@@ -274,6 +275,7 @@ Status analysis(ifstream& inprog)
 			{
 				while (C != '\n')
 					C = get_char(inprog);
+				state = 0;
 			}
 			else if (C == '*')
 				//注释状态
@@ -287,6 +289,7 @@ Status analysis(ifstream& inprog)
 					if (C == '/')
 						break;
 				}
+				state = 0;
 			}
 			else
 			{
@@ -419,9 +422,11 @@ Status analysis(ifstream& inprog)
 			else
 			{
 				retract();
-				//错误处理：仅识别到一个|
-				error(Single_or);
+				state = 0;
+				//识别结果：|
+				add(OPTION, 15);
 			}
+			break;
 		case 20://	错误处理：识别到非法字符
 			error(Invalid_character);
 			state = 0;
@@ -442,7 +447,7 @@ Status analysis(ifstream& inprog)
 			cout << "****************************************************************************" << endl
 				<< "\tLexical Analysis is successfully completed!" << endl
 				<< "\tIn your program, we get:" << endl
-				<< "\tLines:" << line << endl
+				<< "\tLines:" << line - 1 << endl
 				<< "\tIndentifiers:\t" << Word.size() << endl
 				<< "\tIntegers:\t" << INT.size() << endl
 				<< "\tFloats:\t" << FLOAT.size() << endl
@@ -620,7 +625,7 @@ void add(int type, int num)
 		temp.index = index;
 		temp.line = line;
 		TOKEN.push_back(temp);
-		cout << "< WORD, " << word << " >" << endl;
+		cout << "<\tWORD\t\t" << word << "\t\t" << line << "\t>" << endl;
 		break;
 	case KEYWORD:
 		//关键字
@@ -628,7 +633,7 @@ void add(int type, int num)
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
-		cout << "< KEYWORD, " << key[num] << " >" << endl;
+		cout << "<\tKEYWORD\t\t" << key[num] << "\t\t" << line << "\t>" << endl;
 		break;
 	case INTDIG:
 		//整数
@@ -639,7 +644,7 @@ void add(int type, int num)
 		temp.index = index;
 		temp.line = line;
 		TOKEN.push_back(temp);
-		cout << "< INTDIG, " << integer << " >" << endl;
+		cout << "<\tINTDIG\t\t" << integer << "\t\t" << line << "\t>" << endl;
 		break;
 	case FLOATDIG:
 		//浮点数
@@ -650,7 +655,7 @@ void add(int type, int num)
 		temp.index = index;
 		temp.line = line;
 		TOKEN.push_back(temp);
-		cout << "< FLOATDIG, " << floatnum << " >" << endl;
+		cout << "<\tFLOATDIG\t\t" << floatnum << "\t\t" << line << "\t>" << endl;
 		break;
 	case OPTION:
 		//操作符号
@@ -658,7 +663,7 @@ void add(int type, int num)
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
-		cout << "< OPTION, " << opt[num] << " >" << endl;
+		cout << "<\tOPTION\t\t" << opt[num] << "\t\t" << line << "\t>" << endl;
 		break;
 	case END:
 		//界符
@@ -666,7 +671,7 @@ void add(int type, int num)
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
-		cout << "< END, " << End[num] << " >" << endl;
+		cout << "<\tEND\t\t" << End[num] << "\t\t" << line << "\t>" << endl;
 		break;
 	case OTHER:
 		//其他符号
@@ -674,7 +679,7 @@ void add(int type, int num)
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
-		cout << "< OTHER, " << other[num] << " >" << endl;
+		cout << "<\tOTHER\t\t" << other[num] << "\t\t" << line << "\t>" << endl;
 		break;
 	default:
 		error(Other_wrong);
@@ -701,12 +706,6 @@ void error(ErrorType type)
 	case Wrong_E:
 		cout << "****************************************************************************" << endl
 			<< "错误：浮点数指数部分E或e后只能出现（+/-）数字" << endl
-			<< "行号：" << line << endl
-			<< "****************************************************************************" << endl;
-		break;
-	case Single_or:
-		cout << "****************************************************************************" << endl
-			<< "错误：用户输入的||仅有一个|" << endl
 			<< "行号：" << line << endl
 			<< "****************************************************************************" << endl;
 		break;
