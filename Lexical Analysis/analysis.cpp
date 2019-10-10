@@ -27,14 +27,14 @@ const char* opt[optnum] =
 	"#", "&", "?"
 };
 
-const char end[endnum] =
+const char End[endnum] =
 {
 	'(', ')', '{', '}', '[', ']', ':', ';', ',', '.', '\"', '\'', '\\'
 };
 
 const char* other[othernum] =
 {
-	"!", "&&", "||", "<", "<=", ">", ">=", "=", "==", "!="
+	"!", "&&", "||", "<", "<=", ">", ">=", "=", "==", "!=", "_"
 };
 
 Status analysis(ifstream& inprog)
@@ -61,12 +61,8 @@ Status analysis(ifstream& inprog)
 			cur = 0;
 			//读取一个字符
 			C = get_char(inprog);
-			if (C == EOF)
-			{
-				ter = true;
-				break;
-			}
 			get_npc(inprog, C);
+			if (C == EOF) { ter = true; break; }
 			if (C >= 'a' && C <= 'z' || C >= 'A' && C <= 'Z'|| C == '_')
 				//进入标识符状态
 				state = 1;
@@ -91,6 +87,7 @@ Status analysis(ifstream& inprog)
 				case '\"':state = 0; add(END, 10); break;
 				case '\'':state = 0; add(END, 11); break;
 				case '\\':state = 0; add(END, 12); break;
+				case '_':state = 0; add(OTHER, 10); break;
 				case '+':state = 8; break;
 				case '-':state = 9; break;
 				case '*':state = 10; break;
@@ -427,20 +424,31 @@ Status analysis(ifstream& inprog)
 			}
 		case 20://	错误处理：识别到非法字符
 			error(Invalid_character);
+			state = 0;
 			break;
 		default:
+			if (C == EOF) { ter = true; break; }
 			error(Other_wrong);
+			state = 0;
 			break;
 		}
+
+		if (C == EOF)
+			ter = true;
 
 		if (ter)
 			//编译程序完成，完成收尾工作
 		{
-
+			cout << "****************************************************************************" << endl
+				<< "\tLexical Analysis is successfully completed!" << endl
+				<< "\tIn your program, we get:" << endl
+				<< "\tLines:" << line << endl
+				<< "\tIndentifiers:\t" << Word.size() << endl
+				<< "\tIntegers:\t" << INT.size() << endl
+				<< "\tFloats:\t" << FLOAT.size() << endl
+				<< "****************************************************************************" << endl;
 			break;
 		}
-
-
 	}
 
 	return OK;
@@ -453,6 +461,8 @@ char get_char(ifstream& inprog)
 	if (C == EOF)
 		//判断是否到达文件尾或到达双缓存区的两个边界
 	{
+		forwardp = buf + (forwardp + 1 - buf) % (half_buf_size * 2);
+
 		if (forwardp == buf + half_buf_size)
 			getinput(inprog, buf_right);
 		else if (forwardp == buf)
@@ -460,7 +470,6 @@ char get_char(ifstream& inprog)
 		else
 			return C;
 
-		forwardp = buf + (forwardp + 1 - buf) % (half_buf_size * 2);
 		C = get_char(inprog);
 	}
 	else
@@ -475,7 +484,7 @@ char get_char(ifstream& inprog)
 //判断读入的字符是否是空字符
 void get_npc(ifstream& inprog, char& C)
 {
-	if (C == ' ' || C == '\t' || C == '\n')
+	if (C == ' ' || C == '\t' || C == '\n' || C == '\r' || C == '\0')
 	{
 		C = get_char(inprog);
 		get_npc(inprog, C);
@@ -524,23 +533,78 @@ int reserve(char* token)
 }
 
 //将整数从字符串转换为数字
-long long get_int(void)
+long long get_int(char* buf)
 {
-	char* ptr = token;
-	long long intiger = 0LL;
-	while (*ptr != '\0')
+	char* ptr = buf;
+	long long integer = 0LL;
+	while (digit(*ptr))
 	{
-		intiger = intiger * 10 + *ptr - '0';
+		integer = integer * 10 + *ptr - '0';
 		ptr++;
 	}
-	return intiger;
+	return integer;
+}
+
+int get_pnum_length(long long temp)
+{
+	int length = 1;
+	while (temp > 10)
+	{
+		length++;
+		temp /= 10;
+	}
+	return length;
+}
+
+double get_float(void)
+{
+	char* ptr = token;
+	double  floatnum = 0;
+
+	while (digit(*ptr))
+	{
+		floatnum = floatnum * 10 + *ptr - '0';
+		ptr++;
+	}
+
+	if (*ptr == '.')
+	{
+		ptr++;
+		long long temp = get_int(ptr);
+		int length = get_pnum_length(temp);
+		int power = pow(10, length);
+		floatnum += (double)temp / power;
+	}
+
+	while (digit(*ptr)) ptr++;
+
+	if (*ptr == 'E' || *ptr == 'e')
+	{
+		ptr++;
+		int flag = 0;
+		if (*ptr == '-')
+		{
+			flag = 1;
+			ptr++;
+		}
+		else if (*ptr == '+')
+			ptr++;
+
+		long long num = get_int(ptr);
+		if (flag)
+			num = -num;
+		double power = pow(10, num);
+		floatnum *= power;
+	}
+	
+	return floatnum;
 }
 
 //将识别出的记号添加到记号序列中
 void add(int type, int num)
 {
 	string word;
-	long long intiger;
+	long long integer;
 	double floatnum;
 	int index;
 	Token temp;
@@ -556,41 +620,62 @@ void add(int type, int num)
 		temp.index = index;
 		temp.line = line;
 		TOKEN.push_back(temp);
+		cout << "< WORD, " << word << " >" << endl;
+		break;
 	case KEYWORD:
 		//关键字
 		temp.type = KEYWORD;
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
+		cout << "< KEYWORD, " << key[num] << " >" << endl;
+		break;
 	case INTDIG:
 		//整数
-		intiger = get_int();
+		integer = get_int(token);
 		index = INT.size();
-		INT.push_back(intiger);
+		INT.push_back(integer);
 		temp.type = INTDIG;
 		temp.index = index;
 		temp.line = line;
 		TOKEN.push_back(temp);
+		cout << "< INTDIG, " << integer << " >" << endl;
+		break;
 	case FLOATDIG:
 		//浮点数
+		floatnum = get_float();
+		index = FLOAT.size();
+		FLOAT.push_back(floatnum);
+		temp.type = FLOATDIG;
+		temp.index = index;
+		temp.line = line;
+		TOKEN.push_back(temp);
+		cout << "< FLOATDIG, " << floatnum << " >" << endl;
+		break;
 	case OPTION:
 		//操作符号
 		temp.type = OPTION;
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
+		cout << "< OPTION, " << opt[num] << " >" << endl;
+		break;
 	case END:
 		//界符
 		temp.type = END;
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
+		cout << "< END, " << End[num] << " >" << endl;
+		break;
 	case OTHER:
 		//其他符号
 		temp.type = OTHER;
 		temp.index = num;
 		temp.line = line;
 		TOKEN.push_back(temp);
+		cout << "< OTHER, " << other[num] << " >" << endl;
+		break;
 	default:
 		error(Other_wrong);
 		break;

@@ -3,6 +3,7 @@
 #include<fstream>
 #include<vector>
 #include<string>
+#include<cmath>
 using namespace std;
 
 #define half_buf_size 1024
@@ -12,7 +13,7 @@ using namespace std;
 #define keynum 32
 #define optnum 15
 #define endnum 13
-#define othernum 10
+#define othernum 11
 
 #define WORD 1				//普通标识符
 #define KEYWORD 2			//关键字
@@ -42,7 +43,9 @@ bool digit(char& C);
 int reserve(char* token);
 void cat(char& C, int& cur);
 void retract(void);
-long long get_int(void);
+long long get_int(char* buf);
+int get_pnum_length(long long temp);
+double get_float(void);
 void add(int type, int num);
 void error(ErrorType type);
 
