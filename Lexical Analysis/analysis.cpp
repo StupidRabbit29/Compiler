@@ -140,6 +140,17 @@ Status analysis(ifstream& inprog)
 			else if (C == 'E' || C == 'e')
 				//进入指数状态
 				state = 5;
+			else if (letter(C))
+				//错误处理
+			{
+				//跳过输入错误的标识符
+				while (letter(C) || digit(C) || C == '_')
+					C = get_char(inprog);
+
+				retract();
+				state = 0;
+				error(Wrong_identifier);
+			}
 			else
 				//在整数状态结束
 			{
@@ -156,6 +167,11 @@ Status analysis(ifstream& inprog)
 				state = 4;
 			else
 			{
+				//跳过出错位置
+				while (!(C == '\t' || C == '\n' || C == ' '))
+					C = get_char(inprog);
+
+				retract();
 				//在小数点状态出现了错误字符，错误处理
 				error(Wrong_dot);
 				state = 0;
@@ -185,6 +201,10 @@ Status analysis(ifstream& inprog)
 				state = 6;
 			else
 			{
+				//跳过出错位置
+				while (!(C == '\t' || C == '\n' || C == ' '))
+					C = get_char(inprog);
+
 				retract();
 				//在指数状态出现错误字符，错误处理
 				error(Wrong_E);
@@ -198,6 +218,10 @@ Status analysis(ifstream& inprog)
 				state = 7;
 			else
 			{
+				//跳过出错位置
+				while (!(C == '\t' || C == '\n' || C == ' '))
+					C = get_char(inprog);
+
 				retract();
 				//指数部分符号后没有数字，错误处理
 				error(Wrong_neg);
@@ -716,6 +740,12 @@ void error(ErrorType type)
 	case Invalid_character:
 		cout << "****************************************************************************" << endl
 			<< "错误：出现C语言不支持的字符" << endl
+			<< "行号：" << line << endl
+			<< "****************************************************************************" << endl;
+		break;
+	case Wrong_identifier:
+		cout << "****************************************************************************" << endl
+			<< "错误：出现以数字开头的标识符，标识符应以字母或下划线开头" << endl
 			<< "行号：" << line << endl
 			<< "****************************************************************************" << endl;
 		break;

@@ -32,7 +32,7 @@ typedef struct token
 }Token;
 
 enum Status{OK, ERR, TER};
-enum ErrorType{Wrong_dot, Wrong_neg, Wrong_E, Invalid_character, Other_wrong};
+enum ErrorType{Wrong_dot, Wrong_neg, Wrong_E, Invalid_character, Other_wrong, Wrong_identifier};
 
 
 void getinput(ifstream& inprog, int pos);
