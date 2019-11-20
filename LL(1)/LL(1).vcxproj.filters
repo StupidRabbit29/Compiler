@@ -24,6 +24,9 @@
     <ClCompile Include="create_ana_table.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="grammar_ana.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">

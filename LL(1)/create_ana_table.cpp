@@ -44,3 +44,18 @@ void create_ana_table(void)
 		}
 	}
 }
+
+void print_ana_table(void)
+{
+	for (int i = 0; i < nonter_num; i++)
+	{
+		for (int j = 0; j < ter_num; j++)
+		{
+			if (ana_table[i][j].right == "blank")
+				cout << "Blank" << '\t';
+			else
+				cout << ana_table[i][j].left << " -> " << ana_table[i][j].right << '\t';
+		}
+		cout << '\n';
+	}
+}

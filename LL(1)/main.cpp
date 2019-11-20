@@ -22,11 +22,22 @@ map<char, int> NonTer_to_num = {
 	{ 'F', 3 },
 	{ 'B', 4 },
 };
-
+char buffer[max_input] = { '\0' };
 
 int main(void)
 {
 	init();
+	create_ana_table();
+	print_ana_table();
+	get_input();
+	Grammar_ana();
 
 	return 0;
+}
+
+void get_input(void)
+{
+	cin >> buffer;
+	buffer[strlen(buffer)] = '$';
+	cout << buffer << endl;
 }
