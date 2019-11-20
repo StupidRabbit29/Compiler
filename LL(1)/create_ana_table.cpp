@@ -8,6 +8,7 @@ extern Reduce ana_table[nonter_num][ter_num];	//预测分析表
 extern map<char, int> Ter_to_num;
 extern map<char, int> NonTer_to_num;
 extern Reduce blank;
+extern Reduce synch;
 
 void create_ana_table(void)
 {
@@ -43,8 +44,23 @@ void create_ana_table(void)
 				ana_table[NonTer_to_num[(*it).left]][Ter_to_num[*b]] = *it;
 		}
 	}
+
+	//填入同步信息synch
+	vector<char>::iterator Tit;
+	vector<char>::iterator Nit;
+	for (Nit = NonTerminator.begin(); Nit != NonTerminator.end(); Nit++)
+	{
+		for (Tit = Terminator.begin(); Tit != Terminator.end(); Tit++)
+		{
+			vector<char>::iterator re = find(NonT_Follow[*Nit].begin(), NonT_Follow[*Nit].end(), *Tit);
+
+			if (re != NonT_Follow[*Nit].end() && ana_table[NonTer_to_num[*Nit]][Ter_to_num[*Tit]].right == "blank")
+				ana_table[NonTer_to_num[*Nit]][Ter_to_num[*Tit]] = synch;
+		}
+	}
 }
 
+//打印分析表
 void print_ana_table(void)
 {
 	for (int i = 0; i < nonter_num; i++)
@@ -52,10 +68,23 @@ void print_ana_table(void)
 		for (int j = 0; j < ter_num; j++)
 		{
 			if (ana_table[i][j].right == "blank")
-				cout << "Blank" << '\t';
+			{
+				cout.width(15);
+				cout << "Blank";
+			}
+			else if (ana_table[i][j].right == "synch")
+			{
+				cout.width(15);
+				cout << "Synch";
+			}
 			else
-				cout << ana_table[i][j].left << " -> " << ana_table[i][j].right << '\t';
+			{
+				cout.width(15);
+				string left = &ana_table[i][j].left;
+				string output = left + " -> " + ana_table[i][j].right;
+				cout << output;
+			}
 		}
-		cout << '\n';
+		cout << endl;
 	}
 }

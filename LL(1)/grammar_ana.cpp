@@ -19,7 +19,13 @@ void Grammar_ana(void)
 		char X = anastack.top();
 		char a;
 		if (digit(buffer[ptr]))
+		{
+			//简易的词法分析，处理有多位的数字，将其看做一位的数字
+			while (digit(buffer[ptr + 1]))
+				ptr++;
+
 			a = 'n';
+		}	
 		else
 			a = buffer[ptr];
 
@@ -34,13 +40,14 @@ void Grammar_ana(void)
 			else
 				//错误处理
 			{
-
+				anastack.pop();
 			}
 		}
 		else
 			//X是非终结符号
 		{
-			if (!(ana_table[NonTer_to_num[X]][Ter_to_num[a]].right == "blank"))
+			string temp = ana_table[NonTer_to_num[X]][Ter_to_num[a]].right;
+			if (!(temp == "blank" || temp == "synch" ))
 				//有对应的产生式
 			{
 				string reduce_r = ana_table[NonTer_to_num[X]][Ter_to_num[a]].right;
@@ -52,7 +59,14 @@ void Grammar_ana(void)
 			else
 				//错误处理
 			{
-
+				if (temp == "blank")
+				{
+					ptr++;
+				}
+				else if (temp == "synch")
+				{
+					anastack.pop();
+				}
 			}
 		}
 
@@ -61,6 +75,7 @@ void Grammar_ana(void)
 	}
 }
 
+//判断字符是否是终结符
 bool BeTer(char a)
 {
 	vector<char>::iterator it;
@@ -71,6 +86,7 @@ bool BeTer(char a)
 		return true;
 }
 
+//判断字符是否是非终结符
 bool BeNonTer(char a)
 {
 	vector<char>::iterator it;
@@ -81,6 +97,7 @@ bool BeNonTer(char a)
 		return true;
 }
 
+//判断字符是否是数字
 bool digit(char a)
 {
 	if (a >= '0' && a <= '9')

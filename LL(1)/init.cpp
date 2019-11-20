@@ -5,6 +5,7 @@ extern vector<char> Terminator;			//终结符
 extern vector<char> NonTerminator;		//非终结符
 extern map<char, vector<char>> NonT_Follow;		//各非终结符的follow集
 Reduce blank;
+Reduce synch;
 
 void init(void)
 {
@@ -91,4 +92,5 @@ void init(void)
 	NonT_Follow['F'] = F;
 
 	blank.right = "blank";
+	synch.right = "synch";
 }
