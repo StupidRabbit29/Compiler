@@ -12,6 +12,7 @@ void Grammar_ana(void)
 {
 	anastack.push('$');
 	anastack.push('E');
+	bool wrong = false;
 	int ptr = 0;
 
 	while (true)
@@ -29,18 +30,25 @@ void Grammar_ana(void)
 		else
 			a = buffer[ptr];
 
-		if (X == '$' || BeTer(X))
+		if (BeTer(X))
 			//X是终结符或$
 		{
 			if (X == a)
 			{
+				//分析成功
+				if (X == '$')
+					break;
+
 				anastack.pop();
 				ptr++;
 			}
 			else
 				//错误处理
 			{
-				anastack.pop();
+				wrong = true;
+				cout << "栈顶符号与输入串符号不匹配，弹出栈顶符号" << endl;
+				if (X != '$')
+					anastack.pop();
 			}
 		}
 		else
@@ -59,12 +67,18 @@ void Grammar_ana(void)
 			else
 				//错误处理
 			{
+				wrong = true;
 				if (temp == "blank")
 				{
-					ptr++;
+					cout << "分析表项为blank，前移输入串指针" << endl;
+					if (buffer[ptr] == '$')
+						anastack.pop();
+					else
+						ptr++;
 				}
 				else if (temp == "synch")
 				{
+					cout << "分析表项为synch，弹出栈顶符号" << endl;
 					anastack.pop();
 				}
 			}
@@ -73,6 +87,11 @@ void Grammar_ana(void)
 		if (anastack.top() == '$')
 			break;
 	}
+
+	if (anastack.top() == '$' && buffer[ptr] == '$' && !wrong)
+		cout << "分析结束，分析成功" << endl;
+	else
+		cout << "分析结束，分析失败" << endl;
 }
 
 //判断字符是否是终结符

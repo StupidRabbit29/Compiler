@@ -30,7 +30,7 @@ int main(void)
 	create_ana_table();
 	print_ana_table();
 	get_input();
-	//Grammar_ana();
+	Grammar_ana();
 
 	return 0;
 }
