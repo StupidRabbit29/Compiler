@@ -14,6 +14,7 @@ void Grammar_ana(void)
 	anastack.push('E');
 	bool wrong = false;
 	int ptr = 0;
+	int now = 0;
 
 	while (true)
 	{
@@ -30,6 +31,16 @@ void Grammar_ana(void)
 		else
 			a = buffer[ptr];
 
+		if (print)
+		{
+			print_stack();
+			cout.width(30);
+			char temp[max_input];
+			strcpy_s(temp, &(buffer[now]));
+			cout << temp;
+			cout << "\t\t";
+		}
+
 		if (BeTer(X))
 			//X是终结符或$
 		{
@@ -41,6 +52,8 @@ void Grammar_ana(void)
 
 				anastack.pop();
 				ptr++;
+				now++;
+				cout << "终结符匹配成功" << endl;
 			}
 			else
 				//错误处理
@@ -49,6 +62,8 @@ void Grammar_ana(void)
 				cout << "栈顶符号与输入串符号不匹配，弹出栈顶符号" << endl;
 				if (X != '$')
 					anastack.pop();
+
+				ErrorControl(a, X);
 			}
 		}
 		else
@@ -74,13 +89,17 @@ void Grammar_ana(void)
 					if (buffer[ptr] == '$')
 						anastack.pop();
 					else
+					{
+						now++;
 						ptr++;
+					}
 				}
 				else if (temp == "synch")
 				{
 					cout << "分析表项为synch，弹出栈顶符号" << endl;
 					anastack.pop();
 				}
+				ErrorControl(a, X);
 			}
 		}
 
@@ -123,4 +142,49 @@ bool digit(char a)
 		return true;
 	else
 		return false;
+}
+
+//打印错误处理信息
+void ErrorControl(char ter, char nont)
+{
+	if ((nont == 'E' || nont == 'T') && (ter == '+' || ter == '-' || ter == '*' || ter == '/'))
+		cout << "可能缺少数字，或数字输入错误" << endl;
+	else if ((nont == 'E' || nont == 'T') && (ter == ')' || ter == '$'))
+		cout << "输入的算数表达式不完整" << endl;
+	else if (nont == 'A' && (ter == '(' || ter == 'n'))
+		cout << "可能缺少运算符号" << endl;
+	else if (nont == 'B' && (ter == '(' || ter == 'n'))
+		cout << "可能缺少运算符号" << endl;
+	else if (nont == 'F' && ter == ')')
+		cout << "可能括号输入错误" << endl;
+	else if (nont == 'F' && ter == '$')
+		cout << "输入的算数表达式不完整" << endl;
+	else if (nont == 'F' && ter == '$')
+		cout << "输入的算数表达式不完整" << endl;
+	else if (nont == 'F' && ter == '$')
+		cout << "可能缺少数字，或运算符号输入错误" << endl;
+}
+
+void print_stack(void)
+{
+	stack<char>temp;
+	char buf[200] = { '\0' };
+	int i = 0;
+
+	while (!anastack.empty())
+	{
+		temp.push(anastack.top());
+		anastack.pop();
+	}
+
+	while (!temp.empty())
+	{
+		anastack.push(temp.top());
+		buf[i] = temp.top();
+		i++;
+		temp.pop();
+	}
+
+	cout.width(30);
+	cout << buf;
 }

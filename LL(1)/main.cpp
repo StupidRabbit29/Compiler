@@ -37,7 +37,7 @@ int main(void)
 
 void get_input(void)
 {
+	cout << "请输入算数表达式：" << endl;
 	cin >> buffer;
 	buffer[strlen(buffer)] = '$';
-	cout << buffer << endl;
 }

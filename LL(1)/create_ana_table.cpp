@@ -63,8 +63,17 @@ void create_ana_table(void)
 //´òÓ¡·ÖÎö±í
 void print_ana_table(void)
 {
+	for (int j = 0; j < ter_num; j++)
+	{
+		cout.width(15);
+		cout << Terminator.at(j);
+	}
+	cout << endl;
+
 	for (int i = 0; i < nonter_num; i++)
 	{
+		cout << NonTerminator.at(i);
+
 		for (int j = 0; j < ter_num; j++)
 		{
 			if (ana_table[i][j].right == "blank")
@@ -87,4 +96,5 @@ void print_ana_table(void)
 		}
 		cout << endl;
 	}
+	cout << endl << endl << endl;
 }

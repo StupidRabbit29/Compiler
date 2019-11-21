@@ -4,11 +4,13 @@
 #include<map>
 #include<stack>
 #include<string>
+#include<cstring>
 using namespace std;
 
 #define ter_num 8
 #define nonter_num 5
 #define max_input 1024
+#define print true
 
 typedef struct reduce {
 	char left;
@@ -26,3 +28,5 @@ void get_input(void);
 bool BeNonTer(char a);
 bool BeTer(char a);
 bool digit(char a);
+void ErrorControl(char ter, char nont);
+void print_stack(void);
