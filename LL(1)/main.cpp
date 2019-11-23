@@ -22,15 +22,27 @@ map<char, int> NonTer_to_num = {
 	{ 'F', 3 },
 	{ 'B', 4 },
 };
-char buffer[max_input] = { '\0' };
+char buffer[max_input] = { '\0' };			//输入缓冲区
+bool print = false;		//是否打印更多分析过程
 
-int main(void)
+void Getarg(int argc, char* argv[])
 {
-	init();
-	create_ana_table();
-	print_ana_table();
-	get_input();
-	Grammar_ana();
+	if (argc == 2)
+	{
+		char* input = argv[1];
+		if (strcmp(input, "-d") == 0)
+			print = true;
+	}
+}
+
+int main(int argc, char* argv[])
+{
+	Getarg(argc, argv);		//处理用户输入
+	init();					//初始化文法信息
+	create_ana_table();		//构造分析表
+	print_ana_table();		//打印分析表
+	get_input();			//获取用户输入的字符串
+	Grammar_ana();			//对字符串进行语法分析
 
 	return 0;
 }

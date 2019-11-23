@@ -72,7 +72,7 @@ void init(void)
 	reduce_set.push_back(r10);
 
 	char ter[ter_num] = { '+', '-', '*', '/', '(', ')', 'n', '$' };	//终结符
-	char nonter[nonter_num] = { 'E', 'T', 'A', 'F', 'B' };				//非终结符
+	char nonter[nonter_num] = { 'E', 'T', 'A', 'F', 'B' };			//非终结符
 
 	for (int i = 0; i < ter_num; i++)
 		Terminator.push_back(ter[i]);

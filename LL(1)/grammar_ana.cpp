@@ -7,6 +7,7 @@ extern map<char, int> Ter_to_num;
 extern map<char, int> NonTer_to_num;
 stack<char> anastack;					//分析栈
 extern char buffer[max_input];			//输入串
+extern bool print;
 
 void Grammar_ana(void)
 {
@@ -15,6 +16,16 @@ void Grammar_ana(void)
 	bool wrong = false;
 	int ptr = 0;
 	int now = 0;
+
+	if (print)
+	{
+		cout << endl << endl;
+		cout.width(30);
+		cout << "分析栈";
+		cout.width(30);
+		cout << "输入缓存区";
+		cout << "\t\t语法分析器输出" << endl << endl;
+	}
 
 	while (true)
 	{
@@ -35,7 +46,7 @@ void Grammar_ana(void)
 		{
 			print_stack();
 			cout.width(30);
-			char temp[max_input];
+			char temp[max_input] = { '\0' };
 			strcpy_s(temp, &(buffer[now]));
 			cout << temp;
 			cout << "\t\t";
@@ -52,7 +63,7 @@ void Grammar_ana(void)
 
 				anastack.pop();
 				ptr++;
-				now++;
+				now = ptr;
 				cout << "终结符匹配成功" << endl;
 			}
 			else
@@ -90,8 +101,8 @@ void Grammar_ana(void)
 						anastack.pop();
 					else
 					{
-						now++;
 						ptr++;
+						now = ptr;
 					}
 				}
 				else if (temp == "synch")
@@ -108,9 +119,9 @@ void Grammar_ana(void)
 	}
 
 	if (anastack.top() == '$' && buffer[ptr] == '$' && !wrong)
-		cout << "分析结束，分析成功" << endl;
+		cout << endl << endl << "分析结束，分析成功" << endl << endl;
 	else
-		cout << "分析结束，分析失败" << endl;
+		cout << endl << endl << "分析结束，分析失败" << endl << endl;
 }
 
 //判断字符是否是终结符
@@ -148,7 +159,7 @@ bool digit(char a)
 void ErrorControl(char ter, char nont)
 {
 	if ((nont == 'E' || nont == 'T') && (ter == '+' || ter == '-' || ter == '*' || ter == '/'))
-		cout << "可能缺少数字，或数字输入错误" << endl;
+		cout << "可能缺少数字，或输入错误" << endl;
 	else if ((nont == 'E' || nont == 'T') && (ter == ')' || ter == '$'))
 		cout << "输入的算数表达式不完整" << endl;
 	else if (nont == 'A' && (ter == '(' || ter == 'n'))
@@ -156,13 +167,16 @@ void ErrorControl(char ter, char nont)
 	else if (nont == 'B' && (ter == '(' || ter == 'n'))
 		cout << "可能缺少运算符号" << endl;
 	else if (nont == 'F' && ter == ')')
-		cout << "可能括号输入错误" << endl;
+		cout << "括号输入错误" << endl;
 	else if (nont == 'F' && ter == '$')
 		cout << "输入的算数表达式不完整" << endl;
 	else if (nont == 'F' && ter == '$')
 		cout << "输入的算数表达式不完整" << endl;
 	else if (nont == 'F' && ter == '$')
-		cout << "可能缺少数字，或运算符号输入错误" << endl;
+		cout << "可能缺少数字，或输入错误" << endl;
+	
+	if (nont == '(' || nont == ')' || ter == '(' || ter == ')')
+		cout << "括号输入错误" << endl;
 }
 
 void print_stack(void)

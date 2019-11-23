@@ -10,12 +10,12 @@ using namespace std;
 #define ter_num 8
 #define nonter_num 5
 #define max_input 1024
-#define print true
 
+//产生式
 typedef struct reduce {
-	char left;
-	string right;
-	vector<char>first;
+	char left;				//产生式左部
+	string right;			//产生式右部
+	vector<char>first;		//产生式first集
 }Reduce;
 
 
