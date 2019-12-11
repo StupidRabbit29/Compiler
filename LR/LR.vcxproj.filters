@@ -29,5 +29,11 @@
     <ClCompile Include="ProjectSet.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ana_table.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="grammar_ana.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

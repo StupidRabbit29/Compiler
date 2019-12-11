@@ -1,5 +1,6 @@
 #pragma once
 #include<iostream>
+#include<sstream>
 #include<vector>
 #include<map>
 #include<stack>
@@ -10,8 +11,15 @@ using namespace std;
 #define ter_num 8
 #define nonter_num 4
 #define max_input 1024
+#define max_state 20
 
 #define dot_end -1
+
+#define Shiftto 1
+#define Reduceby 2
+#define Gotostate 3
+#define ACC 4
+#define Blank 5
 
 //产生式
 typedef struct reduce {
@@ -38,6 +46,12 @@ typedef struct projS {
 	vector<PprojS> ptr;		//指向其他项目集的指针
 }ProjS;
 
+typedef struct table_entry {
+	int type;				//动作类型
+	int state;				//切换到状态
+	int rID;				//规约产生式标号
+}Table_entry;
+
 
 
 
@@ -49,6 +63,9 @@ void PrintProjs(void);
 bool checkSameProjS(ProjS& a, vector<ProjS>& exist);
 int findsID(ProjS& a, vector<ProjS>& exist);
 bool checkSameProj(ProjS& a, ProjS& b);
+
+void create_ana_table(void);
+void print_ana_table(void);
 
 void findreduce(char left, vector<int>& temp);
 int findproj(int rID, int dot_pos);

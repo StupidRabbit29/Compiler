@@ -5,8 +5,7 @@ vector<Proj> proj_set;			//项目集合
 vector<char> Terminator;		//终结符
 vector<char> NonTerminator;		//非终结符
 map<char, vector<char>> NonT_Follow;		//各非终结符的follow集
-Reduce blank;
-Reduce synch;
+Table_entry blank;
 map<char, int> Ter_to_num = {
 	{ '+', 0 },
 	{ '-', 1 },
@@ -102,8 +101,7 @@ void init(void)
 	NonT_Follow['T'] = T;
 	NonT_Follow['F'] = F;
 
-	//blank.right = "blank";
-	//synch.right = "synch";
+	blank.type = Blank;
 
 	Produce_Proj();
 }

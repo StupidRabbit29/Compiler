@@ -4,17 +4,11 @@ extern vector<Reduce> reduce_set;		//产生式集合
 extern vector<Proj> proj_set;			//项目集合
 extern vector<char> Terminator;		//终结符
 extern vector<char> NonTerminator;		//非终结符
-extern map<char, vector<char>> NonT_Follow;		//各非终结符的follow集
-extern Reduce blank;
-extern Reduce synch;
 extern map<char, int> Ter_to_num;
 extern map<char, int> NonTer_to_num;
-
 vector<ProjS> proj_cluster;
 stack<ProjS> todo;
 int proj_set_num = 0;
-
-extern int proj_num;
 
 //产生项目集规范簇
 void CreateProjSet(void)
@@ -131,10 +125,13 @@ void CreateProjSet(void)
 
 void PrintProjs(void)
 {
+	cout << "状态总数：" << proj_cluster.size() << endl << endl;
+
 	for (vector<ProjS>::iterator it = proj_cluster.begin(); it != proj_cluster.end(); it++)
 	{
-		cout << "---------------------------------------------------------------" << endl;
-		cout << (*it).sID << endl;
+		cout << "--------------------" << endl;
+		cout << "状态：" << (*it).sID << endl << endl;
+		cout << "项目：" << endl;
 		for (vector<int>::iterator pit = (*it).projs.begin(); pit != (*it).projs.end(); pit++)
 		{
 			Proj proj = proj_set.at(*pit);
@@ -151,11 +148,12 @@ void PrintProjs(void)
 		}
 		cout << endl;
 
+		cout << "跳转" << endl;
 		for (vector<PprojS>::iterator qit = (*it).ptr.begin(); qit != (*it).ptr.end(); qit++)
 		{
 			cout << (*qit).word << " : " << (*qit).sID << endl;
 		}
-		cout << "---------------------------------------------------------------" << endl << endl;
+		cout << "--------------------" << endl << endl;
 	}
 }
 

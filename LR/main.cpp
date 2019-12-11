@@ -26,8 +26,8 @@ int main(int argc, char* argv[])
 	init();					//初始化文法信息
 	CreateProjSet();
 	PrintProjs();
-	//create_ana_table();		//构造分析表
-	//print_ana_table();		//打印分析表
+	create_ana_table();		//构造分析表
+	print_ana_table();		//打印分析表
 	//get_input();			//获取用户输入的字符串
 	//Grammar_ana();			//对字符串进行语法分析
 

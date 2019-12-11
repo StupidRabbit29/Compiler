@@ -126,6 +126,8 @@
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ana_table.cpp" />
+    <ClCompile Include="grammar_ana.cpp" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ProjectSet.cpp" />
