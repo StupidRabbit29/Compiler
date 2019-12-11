@@ -4,7 +4,7 @@ vector<Reduce> reduce_set;		//产生式集合
 vector<Proj> proj_set;			//项目集合
 vector<char> Terminator;		//终结符
 vector<char> NonTerminator;		//非终结符
-extern map<char, vector<char>> NonT_Follow;		//各非终结符的follow集
+map<char, vector<char>> NonT_Follow;		//各非终结符的follow集
 Reduce blank;
 Reduce synch;
 map<char, int> Ter_to_num = {
@@ -104,6 +104,8 @@ void init(void)
 
 	//blank.right = "blank";
 	//synch.right = "synch";
+
+	Produce_Proj();
 }
 
 //构造所有项目

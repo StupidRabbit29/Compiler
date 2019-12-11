@@ -44,5 +44,14 @@ typedef struct projS {
 void init(void);
 void Produce_Proj(void);
 void CreateProjSet(void);
+void Closure(vector<int> pID, vector<int>& projs);
+void PrintProjs(void);
+bool checkSameProjS(ProjS& a, vector<ProjS>& exist);
+int findsID(ProjS& a, vector<ProjS>& exist);
+bool checkSameProj(ProjS& a, ProjS& b);
 
+void findreduce(char left, vector<int>& temp);
+int findproj(int rID, int dot_pos);
+bool Projexit(int pID, vector<int>temp);
+bool BeTer(char a);
 bool BeNonTer(char a);
