@@ -68,7 +68,45 @@ void create_ana_table(void)
 			}
 		}
 	}
-	
+
+	//´íÎóÌî³ä
+	ana_table[3][2].type = Error;
+	ana_table[3][2].errortype = e4;
+	ana_table[3][3].type = Error;
+	ana_table[3][3].errortype = e4;
+	ana_table[14][2].type = Error;
+	ana_table[14][2].errortype = e4;
+	ana_table[14][3].type = Error;
+	ana_table[14][3].errortype = e4;
+	for (int i = 0; i < line; i++)
+	{
+		if (ana_table[i][Ter_to_num[')']].type == Blank)
+		{
+			ana_table[i][Ter_to_num[')']].type = Error;
+			ana_table[i][Ter_to_num[')']].errortype = e3;
+		}
+
+		if (ana_table[i][Ter_to_num['(']].type == Blank)
+		{
+			ana_table[i][Ter_to_num['(']].type = Error;
+			ana_table[i][Ter_to_num['(']].errortype = e2;
+		}
+
+		if (ana_table[i][Ter_to_num['n']].type == Blank)
+		{
+			ana_table[i][Ter_to_num['n']].type = Error;
+			ana_table[i][Ter_to_num['n']].errortype = e2;
+		}
+
+		for (int j = 0; j < 8; j++)
+		{
+			if (ana_table[i][j].type == Blank)
+			{
+				ana_table[i][j].type = Error;
+				ana_table[i][j].errortype = e1;
+			}
+		}
+	}
 }
 
 //´òÓ¡·ÖÎö±í
@@ -135,6 +173,12 @@ void print_ana_table(void)
 			{
 				cout.width(10);
 				cout << "ACC";
+			}
+			else if (ana_table[i][j].type == Error)
+			{
+				string errortemp[4] = { "e1", "e2", "e3", "e4" };
+				cout.width(10);
+				cout << errortemp[ana_table[i][j].errortype];
 			}
 		}
 		cout << endl;

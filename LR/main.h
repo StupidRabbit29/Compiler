@@ -20,6 +20,12 @@ using namespace std;
 #define Gotostate 3
 #define ACC 4
 #define Blank 5
+#define Error 6
+
+#define e1 0
+#define e2 1
+#define e3 2
+#define e4 3
 
 //产生式
 typedef struct reduce {
@@ -50,6 +56,7 @@ typedef struct table_entry {
 	int type;				//动作类型
 	int state;				//切换到状态
 	int rID;				//规约产生式标号
+	int errortype;			//错误代号
 }Table_entry;
 
 
@@ -67,6 +74,7 @@ bool checkSameProj(ProjS& a, ProjS& b);
 void create_ana_table(void);
 void print_ana_table(void);
 void Grammar_ana(void);
+void ErrorControl(int Err);
 
 void findreduce(char left, vector<int>& temp);
 int findproj(int rID, int dot_pos);

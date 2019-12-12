@@ -1,21 +1,17 @@
 #include"main.h"
 
 extern vector<Reduce> reduce_set;		//产生式集合
-extern vector<Proj> proj_set;			//项目集合
-extern vector<char> Terminator;		//终结符
-extern vector<char> NonTerminator;		//非终结符
-extern map<char, vector<char>> NonT_Follow;		//各非终结符的follow集
 extern Table_entry blank;
 extern map<char, int> Ter_to_num;
 extern map<char, int> NonTer_to_num;
-extern vector<ProjS> proj_cluster;
-extern int proj_set_num;
 extern Table_entry ana_table[max_state][ter_num + nonter_num - 1];
 
 stack<int> statestack;					//状态栈
 stack<char> chstack;					//符号栈
 extern char buffer[max_input];			//输入串
 extern bool print;
+
+string printErr[4] = { "缺少运算对象", "缺少运算符号", "括号不匹配", "其他错误" };
 
 //文法分析
 void Grammar_ana(void)
@@ -38,6 +34,11 @@ void Grammar_ana(void)
 
 	while (true)
 	{
+		if (statestack.empty())
+		{
+			wrong = true;
+			break;
+		}
 		int state = statestack.top();
 		char X = chstack.top();
 		char a;
@@ -65,12 +66,7 @@ void Grammar_ana(void)
 		}
 		string printtemp = print_stack(chstack);
 
-		Table_entry work;
-
-		if (BeTer(a))
-			work = ana_table[state][Ter_to_num[a]];
-		else
-			work = ana_table[state][NonTer_to_num[a] + ter_num - 1];
+		Table_entry work = ana_table[state][Ter_to_num[a]];
 
 		if (work.type == Shiftto)
 		{
@@ -105,7 +101,7 @@ void Grammar_ana(void)
 			if (print)
 			{
 				cout.width(50);
-				cout << print_stack(chstack) << endl;
+				cout << printtemp << endl;
 			}
 		}
 		else if (work.type == ACC)
@@ -114,15 +110,23 @@ void Grammar_ana(void)
 			if (print)
 			{
 				cout.width(50);
-				cout << print_stack(chstack) << endl;
+				cout << printtemp << endl;
 			}
 			break;
 		}
-		else
+		else if (work.type == Error)
 		{
 			wrong = true;
+			cout << printErr[work.errortype] << endl;
+			//ErrorControl(work.errortype);
+			break;000
 		}
 	}
+
+	if (!wrong)
+		cout << endl << endl << "分析结束，分析成功" << endl << endl;
+	else
+		cout << endl << endl << "分析结束，分析失败" << endl << endl;
 }
 
 //判断字符是否是数字
@@ -135,28 +139,26 @@ bool digit(char a)
 }
 
 //打印错误处理信息
-void ErrorControl(char ter, char nont)
-{
-	if ((nont == 'E' || nont == 'T') && (ter == '+' || ter == '-' || ter == '*' || ter == '/'))
-		cout << "可能缺少数字，或输入错误" << endl;
-	else if ((nont == 'E' || nont == 'T') && (ter == ')' || ter == '$'))
-		cout << "输入的算数表达式不完整" << endl;
-	else if (nont == 'A' && (ter == '(' || ter == 'n'))
-		cout << "可能缺少运算符号" << endl;
-	else if (nont == 'B' && (ter == '(' || ter == 'n'))
-		cout << "可能缺少运算符号" << endl;
-	else if (nont == 'F' && ter == ')')
-		cout << "括号输入错误" << endl;
-	else if (nont == 'F' && ter == '$')
-		cout << "输入的算数表达式不完整" << endl;
-	else if (nont == 'F' && ter == '$')
-		cout << "输入的算数表达式不完整" << endl;
-	else if (nont == 'F' && ter == '$')
-		cout << "可能缺少数字，或输入错误" << endl;
-
-	if (nont == '(' || nont == ')' || ter == '(' || ter == ')')
-		cout << "括号输入错误" << endl;
-}
+//void ErrorControl(int Err)
+//{
+//	if (Err == e1)
+//	{
+//		statestack.push(2);
+//		chstack.push('n');
+//	}
+//	else if (Err == e2)
+//	{
+//
+//	}
+//	else if (Err == e3)
+//	{
+//
+//	}
+//	else if (Err == e4)
+//	{
+//
+//	}
+//}
 
 template<class Type>
 string print_stack(stack<Type> work)
