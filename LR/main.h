@@ -66,9 +66,14 @@ bool checkSameProj(ProjS& a, ProjS& b);
 
 void create_ana_table(void);
 void print_ana_table(void);
+void Grammar_ana(void);
 
 void findreduce(char left, vector<int>& temp);
 int findproj(int rID, int dot_pos);
 bool Projexit(int pID, vector<int>temp);
 bool BeTer(char a);
 bool BeNonTer(char a);
+bool digit(char a);
+
+template<class Type>
+string print_stack(stack<Type> work);

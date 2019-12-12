@@ -21,7 +21,7 @@ extern bool print;
 void Grammar_ana(void)
 {
 	statestack.push(0);
-	chstack.push('_');
+	chstack.push(' ');
 	bool wrong = false;
 	int ptr = 0;
 	int now = 0;
@@ -29,7 +29,7 @@ void Grammar_ana(void)
 	if (print)
 	{
 		cout << endl << endl;
-		cout.width(30);
+		cout.width(50);
 		cout << "分析栈";
 		cout.width(30);
 		cout << "输入缓存区";
@@ -38,7 +38,8 @@ void Grammar_ana(void)
 
 	while (true)
 	{
-		char X = anastack.top();
+		int state = statestack.top();
+		char X = chstack.top();
 		char a;
 		if (digit(buffer[ptr]))
 		{
@@ -53,106 +54,75 @@ void Grammar_ana(void)
 
 		if (print)
 		{
-			print_stack();
-			cout.width(30);
+			cout.width(50);
+			cout << print_stack(statestack);
 			char temp[max_input] = { '\0' };
 			strcpy_s(temp, &(buffer[now]));
+			cout.width(30);
 			cout << temp;
+			//cout.setf(ios_base::right);
 			cout << "\t\t";
 		}
+		string printtemp = print_stack(chstack);
 
-		if (BeTer(X))
-			//X是终结符或$
+		Table_entry work;
+
+		if (BeTer(a))
+			work = ana_table[state][Ter_to_num[a]];
+		else
+			work = ana_table[state][NonTer_to_num[a] + ter_num - 1];
+
+		if (work.type == Shiftto)
 		{
-			if (X == a)
-			{
-				//分析成功
-				if (X == '$')
-					break;
+			statestack.push(work.state);
+			chstack.push(a);
+			ptr++;
+			now = ptr;
 
-				anastack.pop();
-				ptr++;
-				now = ptr;
-				cout << "终结符匹配成功" << endl;
-			}
-			else
-				//错误处理
+			cout << "Shift to state " << work.state << endl;
+			if (print)
 			{
-				wrong = true;
-				cout << "栈顶符号与输入串符号不匹配，弹出栈顶符号" << endl;
-				if (X != '$')
-					anastack.pop();
-
-				ErrorControl(a, X);
+				cout.width(50);
+				cout << printtemp << endl;
 			}
+		}
+		else if (work.type == Reduceby)
+		{
+			Reduce red = reduce_set.at(work.rID);
+			int len = red.right.length();
+			for (int i = 0; i < len; i++)
+			{
+				statestack.pop();
+				chstack.pop();
+			}
+
+			int newstate = statestack.top();
+			statestack.push(ana_table[newstate][NonTer_to_num[red.left] + ter_num - 1].state);
+			chstack.push(red.left);
+
+			//cout << red.left << " --> " << red.right << endl;
+			cout << "Reduce by " << red.left << " --> " << red.right << endl;
+			if (print)
+			{
+				cout.width(50);
+				cout << print_stack(chstack) << endl;
+			}
+		}
+		else if (work.type == ACC)
+		{
+			cout << "ACC" << endl;
+			if (print)
+			{
+				cout.width(50);
+				cout << print_stack(chstack) << endl;
+			}
+			break;
 		}
 		else
-			//X是非终结符号
 		{
-			string temp = ana_table[NonTer_to_num[X]][Ter_to_num[a]].right;
-			if (!(temp == "blank" || temp == "synch"))
-				//有对应的产生式
-			{
-				string reduce_r = ana_table[NonTer_to_num[X]][Ter_to_num[a]].right;
-				anastack.pop();
-				for (int i = reduce_r.length() - 1; i > -1; i--)
-					anastack.push(reduce_r[i]);
-				cout << X << " --> " << reduce_r << endl;
-			}
-			else
-				//错误处理
-			{
-				wrong = true;
-				if (temp == "blank")
-				{
-					cout << "分析表项为blank，前移输入串指针" << endl;
-					if (buffer[ptr] == '$')
-						anastack.pop();
-					else
-					{
-						ptr++;
-						now = ptr;
-					}
-				}
-				else if (temp == "synch")
-				{
-					cout << "分析表项为synch，弹出栈顶符号" << endl;
-					anastack.pop();
-				}
-				ErrorControl(a, X);
-			}
+			wrong = true;
 		}
-
-		if (anastack.top() == '$')
-			break;
 	}
-
-	if (anastack.top() == '$' && buffer[ptr] == '$' && !wrong)
-		cout << endl << endl << "分析结束，分析成功" << endl << endl;
-	else
-		cout << endl << endl << "分析结束，分析失败" << endl << endl;
-}
-
-//判断字符是否是终结符
-bool BeTer(char a)
-{
-	vector<char>::iterator it;
-	it = find(Terminator.begin(), Terminator.end(), a);
-	if (it == Terminator.end())
-		return false;
-	else
-		return true;
-}
-
-//判断字符是否是非终结符
-bool BeNonTer(char a)
-{
-	vector<char>::iterator it;
-	it = find(NonTerminator.begin(), NonTerminator.end(), a);
-	if (it == NonTerminator.end())
-		return false;
-	else
-		return true;
 }
 
 //判断字符是否是数字
@@ -188,26 +158,38 @@ void ErrorControl(char ter, char nont)
 		cout << "括号输入错误" << endl;
 }
 
-void print_stack(void)
+template<class Type>
+string print_stack(stack<Type> work)
 {
-	stack<char>temp;
-	char buf[200] = { '\0' };
+	stringstream ss;
+	string result;
+
+	stack<Type>temp;
+	Type buf[200] = { '\0' };
 	int i = 0;
 
-	while (!anastack.empty())
+	while (!work.empty())
 	{
-		temp.push(anastack.top());
-		anastack.pop();
+		temp.push(work.top());
+		work.pop();
 	}
 
 	while (!temp.empty())
 	{
-		anastack.push(temp.top());
+		work.push(temp.top());
 		buf[i] = temp.top();
 		i++;
 		temp.pop();
 	}
 
-	cout.width(30);
-	cout << buf;
+	//cout.width(40);
+	for (int j = 0; j < i; j++)
+	{
+		ss.fill(' ');
+		ss.width(3);
+		ss << buf[j];
+	}
+	result = ss.str();
+	//cout << result.length() << endl;
+	return result;
 }
