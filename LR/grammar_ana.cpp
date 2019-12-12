@@ -119,7 +119,7 @@ void Grammar_ana(void)
 			wrong = true;
 			cout << printErr[work.errortype] << endl;
 			//ErrorControl(work.errortype);
-			break;000
+			break;
 		}
 	}
 
