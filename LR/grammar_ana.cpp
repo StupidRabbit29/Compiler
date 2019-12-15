@@ -53,6 +53,7 @@ void Grammar_ana(void)
 		else
 			a = buffer[ptr];
 
+		//打印表头
 		if (print)
 		{
 			cout.width(50);
@@ -68,6 +69,7 @@ void Grammar_ana(void)
 
 		Table_entry work = ana_table[state][Ter_to_num[a]];
 
+		//移进
 		if (work.type == Shiftto)
 		{
 			statestack.push(work.state);
@@ -82,6 +84,7 @@ void Grammar_ana(void)
 				cout << printtemp << endl;
 			}
 		}
+		//归约
 		else if (work.type == Reduceby)
 		{
 			Reduce red = reduce_set.at(work.rID);
@@ -104,6 +107,7 @@ void Grammar_ana(void)
 				cout << printtemp << endl;
 			}
 		}
+		//ACC
 		else if (work.type == ACC)
 		{
 			cout << "ACC" << endl;
@@ -114,6 +118,7 @@ void Grammar_ana(void)
 			}
 			break;
 		}
+		//错误处理
 		else if (work.type == Error)
 		{
 			wrong = true;
@@ -160,6 +165,7 @@ bool digit(char a)
 //	}
 //}
 
+//打印栈
 template<class Type>
 string print_stack(stack<Type> work)
 {

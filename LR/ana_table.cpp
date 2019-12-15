@@ -10,26 +10,32 @@ extern map<char, int> Ter_to_num;
 extern map<char, int> NonTer_to_num;
 extern vector<ProjS> proj_cluster;
 extern int proj_set_num;
-Table_entry ana_table[max_state][ter_num + nonter_num - 1];
+Table_entry ana_table[max_state][ter_num + nonter_num - 1];		//预测分析表
 
 
-
+//自动构造SLR（1）分析表
 void create_ana_table(void)
 {
 	int line = proj_set_num;
 	int row = ter_num + nonter_num - 1;
+
 	//预处理：先将分析表中所有位置都填上空白
 	for (int i = 0; i < line; i++)
 		for (int j = 0; j < row; j++)
 			ana_table[i][j] = blank;
 
+	//遍历所有的项目集
 	for (vector<ProjS>::iterator it = proj_cluster.begin(); it != proj_cluster.end(); it++)
 	{
 		ProjS work = *it;
 		int sID = work.sID;
+
+		//遍历所有的DFA之间的跳转信息
 		for (vector<PprojS>::iterator pit = work.ptr.begin(); pit != work.ptr.end(); pit++)
 		{
 			char ch = (*pit).word;
+
+			//填入Shift和Goto
 			if (BeTer(ch))
 			{
 				Table_entry temp;
@@ -46,6 +52,7 @@ void create_ana_table(void)
 			}
 		}
 
+		//遍历所有的项目，处理归约项目和ACC
 		for (vector<int>::iterator pit = work.projs.begin(); pit != work.projs.end(); pit++)
 		{
 			if (proj_set.at(*pit).dot_pos == -1)

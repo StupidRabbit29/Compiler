@@ -6,13 +6,15 @@ extern vector<char> Terminator;		//终结符
 extern vector<char> NonTerminator;		//非终结符
 extern map<char, int> Ter_to_num;
 extern map<char, int> NonTer_to_num;
-vector<ProjS> proj_cluster;
-stack<ProjS> todo;
+
+vector<ProjS> proj_cluster;			//项目集规范簇
+stack<ProjS> todo;					//产生项目集规范簇过程中用到的工作栈
 int proj_set_num = 0;
 
-//产生项目集规范簇
+//自动构造SLR（1）项目集规范簇
 void CreateProjSet(void)
 {
+	//首先将初始项目集放入工作栈
 	vector<ProjS> exist;
 	vector<int> pID;
 	int start = findproj(0, 0);
@@ -25,13 +27,16 @@ void CreateProjSet(void)
 
 	while (!todo.empty())
 	{
+		//从工作栈中取出待处理的项目
 		ProjS work = todo.top();
 		todo.pop();	
-			
+		
+		//初始化变量，用于记录项目中原点后面的字符
 		bool action[ter_num] = { false };
 		bool Goto[nonter_num] = { false };
 		ProjS actionProj[ter_num];
 		ProjS gotoProj[nonter_num];
+		//遍历所有项目
 		for (vector<int>::iterator it = work.projs.begin(); it != work.projs.end(); it++)
 		{
 			Proj temp = proj_set.at(*it);
@@ -43,6 +48,8 @@ void CreateProjSet(void)
 			else
 				continue;
 			char ch = right[dot_pos];
+
+			//根据小圆点后面的字符，完善统计信息
 			if (BeTer(ch))
 			{
 				int tern = Ter_to_num[ch];
@@ -67,6 +74,7 @@ void CreateProjSet(void)
 			}
 		}
 
+		//遍历移进项目，构造后续的项目集
 		for (int i = 0; i < ter_num; i++)
 		{
 			if (action[i])
@@ -93,6 +101,7 @@ void CreateProjSet(void)
 			}
 		}
 
+		//遍历待约项目，构造后续的项目集
 		for (int i = 0; i < nonter_num; i++)
 		{
 			if (Goto[i])
@@ -123,6 +132,7 @@ void CreateProjSet(void)
 	}
 }
 
+//打印自动生成的项目集规范簇
 void PrintProjs(void)
 {
 	cout << "状态总数：" << proj_cluster.size() << endl << endl;
@@ -132,6 +142,8 @@ void PrintProjs(void)
 		cout << "--------------------" << endl;
 		cout << "状态：" << (*it).sID << endl << endl;
 		cout << "项目：" << endl;
+
+		//遍历项目集中的所有项目，并打印
 		for (vector<int>::iterator pit = (*it).projs.begin(); pit != (*it).projs.end(); pit++)
 		{
 			Proj proj = proj_set.at(*pit);
@@ -149,6 +161,8 @@ void PrintProjs(void)
 		cout << endl;
 
 		cout << "跳转" << endl;
+
+		//打印项目集之间的跳转信息
 		for (vector<PprojS>::iterator qit = (*it).ptr.begin(); qit != (*it).ptr.end(); qit++)
 		{
 			cout << (*qit).word << " : " << (*qit).sID << endl;
